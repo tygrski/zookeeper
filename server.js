@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 const express = require("express");
 
 const PORT = process.env.PORT || 3001;
@@ -16,6 +16,7 @@ app.use(express.json());
 
 // route that the front-end can request data from
 const { animals } = require("./data/animals");
+const { off } = require("process");
 
 function filterByQuery(query, animalsArray) {
   let personalityTraitsArray = [];
@@ -58,7 +59,6 @@ function filterByQuery(query, animalsArray) {
       (animal) => animal.name === query.name
     );
   }
-
   // return the filtered results:
   return filteredResults;
 }
@@ -74,11 +74,28 @@ function createNewAnimal(body, animalsArray) {
   const animal = body;
   animalsArray.push(animal);
   fs.writeFileSync(
-    path.join(__dirname, './data/animals.json'),
+    path.join(__dirname, "./data/animals.json"),
     JSON.stringify({ animals: animalsArray }, null, 2)
   );
   return animal;
 }
+
+function validateAnimal(animal) {
+  if (!animal.name || typeof animal.name !== "string") {
+    return false;
+  }
+  if (animal.species || typeof animal.species !== "string") {
+    return false;
+  }
+  if (animal.diet || typeof animal.diet !== "string") {
+    return false;
+  }
+  if (animal.personalityTraits || !Array.isArray(animal.personalityTraits)) {
+    return false;
+  }
+  return true;
+}
+
 // add the route. get() method requires two arguments. The first is a string that describes the route the client will have to fetch from. The second is a callback function that will execute every time that route is accessed with a GET request.
 app.get("/api/animals", (req, res) => {
   let results = animals;
@@ -99,14 +116,18 @@ app.get("/api/animals/:id", (req, res) => {
 });
 
 // route on our server that accepts data to be used or stored server-side
-app.post('/api/animals', (req, res) => {
+app.post("/api/animals", (req, res) => {
   // set id based on what the next index of the array will be
   req.body.id = animals.length.toString();
 
+  // if any data in the req.body is oncorrect, send 400 error back
+  if(!validateAnimal(req.body)){
+    res.status(400).send('The animal is not properly formatted');
+  } else {
   // add animal to json file and animals array in this function
   const animal = createNewAnimal(req.body, animals);
-
   res.json(animal);
+ }
 });
 
 // method to make server listen by chaining the listen() method onto the server
