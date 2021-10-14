@@ -44,6 +44,6 @@ const handleAnimalFormSubmit = event => {
       console.log(postResponse);
       alert('Thank you for adding an animal!');
     });
-};
+  }
 
 $animalForm.addEventListener('submit', handleAnimalFormSubmit);
