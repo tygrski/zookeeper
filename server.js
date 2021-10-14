@@ -6,6 +6,9 @@ const PORT = process.env.PORT || 3001;
 // instantiate the server
 const app = express();
 
+// middleware that instructs the server to make certain files readily available and to not gate it behind a server endpoint.
+app.use(express.static('public'));
+
 // parse incoming string or array data
 // mounts a function to the server that our requests will pass through before getting to the intended endpoint.
 // The functions we can mount to our server are referred to as middleware.
@@ -128,6 +131,10 @@ app.post("/api/animals", (req, res) => {
   const animal = createNewAnimal(req.body, animals);
   res.json(animal);
  }
+});
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, './public/index.html'));
 });
 
 // method to make server listen by chaining the listen() method onto the server
