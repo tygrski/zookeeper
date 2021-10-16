@@ -21,5 +21,8 @@
   "bugs": {
     "url": "https://github.com/tygrski/zookeeper/issues"
   },
-  "homepage": "https://github.com/tygrski/zookeeper#readme"
+  "homepage": "https://github.com/tygrski/zookeeper#readme",
+  "directories": {
+    "lib": "lib"
+  }
 }
